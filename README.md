@@ -1,6 +1,8 @@
-# javascript-action-template
+# is-release-production-ready
 
-This template can be used to quickly start a new custom js action repository.  Click the `Use this template` button at the top to get started.
+An action that retrieves a release by tag and determines if it is a Published release.  The action considers releases to be Production ready when the API returns false for the release's `draft` and `prerelease` fields.
+
+The action can be set up to fail if a prerelease is detected by using the `fail-for-prerelease` argument.  Alternatively, the action output can be used to make further decisions in the workflow.
 
 - [Inputs](#inputs)
 - [Outputs](#outputs)
@@ -10,75 +12,43 @@ This template can be used to quickly start a new custom js action repository.  C
 - [Code of Conduct](#code-of-conduct)
 - [License](#license)
 
-## TODOs
-- Readme
-  - [ ] Update the Inputs section with the correct action inputs
-  - [ ] Update the Outputs section with the correct action outputs
-  - [ ] Update the Usage Example section with the correct usage   
-- package.json
-  - [ ] Update the `name` with the new action value
-- src/main.js
-  - [ ] Implement your custom javascript action
-- action.yml
-  - [ ] Fill in the correct name, description, inputs and outputs
-- .prettierrc.json
-  - [ ] Update any preferences you might have
-- CODEOWNERS
-  - [ ] Update as appropriate
-- Repository Settings
-  - [ ] On the *Options* tab check the box to *Automatically delete head branches*
-  - [ ] On the *Options* tab update the repository's visibility (must be done by an org owner)
-  - [ ] On the *Branches* tab add a branch protection rule
-    - [ ] Check *Require pull request reviews before merging*
-    - [ ] Check *Dismiss stale pull request approvals when new commits are pushed*
-    - [ ] Check *Require review from Code Owners*
-    - [ ] Check *Include Administrators*
-  - [ ] On the *Manage Access* tab add the appropriate groups
-- About Section (accessed on the main page of the repo, click the gear icon to edit)
-  - [ ] The repo should have a short description of what it is for
-  - [ ] Add one of the following topic tags:
-    | Topic Tag       | Usage                                    |
-    | --------------- | ---------------------------------------- |
-    | az              | For actions related to Azure             |
-    | code            | For actions related to building code     |
-    | certs           | For actions related to certificates      |
-    | db              | For actions related to databases         |
-    | git             | For actions related to Git               |
-    | iis             | For actions related to IIS               |
-    | microsoft-teams | For actions related to Microsoft Teams   |
-    | svc             | For actions related to Windows Services  |
-    | jira            | For actions related to Jira              |
-    | meta            | For actions related to running workflows |
-    | pagerduty       | For actions related to PagerDuty         |
-    | test            | For actions related to testing           |
-    | tf              | For actions related to Terraform         |
-  - [ ] Add any additional topics for an action if they apply    
-  - [ ] The Packages and Environments boxes can be unchecked
-
-  
 ## Inputs
-| Parameter | Is Required | Default | Description           |
-| --------- | ----------- | ------- | --------------------- |
-| `input`   | true        |         | Description goes here |
+| Parameter             | Is Required | Default | Description                                                                                                                 |
+| --------------------- | ----------- | ------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `token`               | true        | N/A     | A token with permission to retrieve a repository's release information.  Generally `${{ secrets.GITHUB_TOKEN }}`            |
+| `release-tag`         | true        | N/A     | The tag of the release that should be checked.                                                                              |
+| `fail-for-prerelease` | false       | `true`  | Flag indicating whether the action should fail if it detects a prerelease or cannot find a release.  Accepts: `true\|false` |
 
 ## Outputs
-| Output   | Description           |
-| -------- | --------------------- |
-| `output` | Description goes here |
+| Output             | Description                                              |
+| ------------------ | -------------------------------------------------------- |
+| `PRODUCTION_READY` | Flag indicating whether the release is production ready. |
 
 ## Usage Examples
 
 ```yml
+on:
+  workflow_dispatch:
+    inputs:
+      release-tag:
+        description: 'The tag of the release that will be deployed.'
+
 jobs:
-  jobname:
+  prepare-for-deploy:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
 
-      - name: ''
-        uses: im-open/thisrepo@v1.0.0 # TODO:  fix the action name
+      # If this action determines the release is not production ready
+      # it will fail and the next job, deploy, will not happen.
+      - uses: im-open/is-release-production-ready@v1.0.0
         with:
-          input: ''
+          token: ${{ secrets.GITHUB_TOKEN }}
+          release-tag: ${{ github.event.inputs.release-tag }}
+          fail-for-prerelease: true
+  
+  deploy:
+    ...
 ```
 
 ## Recompiling
