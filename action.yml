@@ -1,15 +1,21 @@
-name: 'JavaScript Action Template'
+name: 'is-release-production-ready'
 
-description: 'Add description here'
+description: 'An action that retrieves a release by tag and determines if it is a Published release, not a draft or prerelease.'
 
 inputs:
-  input-1:
-    description: 'Add a description here'
+  token:
+    description: 'A token with permission to retrieve repository release information.  Generally secrets.GITHUB_TOKEN'
+    required: true
+  release-tag:
+    description: 'The tag of the release that should be checked.'
+    required: true
+  fail-for-prerelease:
+    description: 'Flag indicating whether the action should fail if it detects a prerelease.  Accepts: true|false'
     required: true
 
 outputs:
-  output-1:
-    description: 'Add a description here'
+  PRODUCTION_READY:
+    description: 'Flag indicating whether the release is production ready.'
 
 runs:
   using: 'node12'
