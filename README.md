@@ -40,11 +40,11 @@ jobs:
   prepare-for-deploy:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       # If this action determines the release is not production ready
       # it will fail and the next job, deploy, will not happen.
-      - uses: im-open/is-release-production-ready@v1.0.1
+      - uses: im-open/is-release-production-ready@v1.1.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           release-tag: ${{ github.event.inputs.release-tag }}
