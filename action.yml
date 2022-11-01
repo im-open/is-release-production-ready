@@ -12,6 +12,7 @@ inputs:
   fail-for-prerelease:
     description: 'Flag indicating whether the action should fail if it detects a prerelease.  Accepts: true|false'
     required: true
+    default: 'false'
 
 outputs:
   PRODUCTION_READY:
