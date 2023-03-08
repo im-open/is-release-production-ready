@@ -44,6 +44,7 @@ jobs:
 
       # If this action determines the release is not production ready
       # it will fail and the next job, deploy, will not happen.
+      # You may also reference just the major or major.minor version
       - uses: im-open/is-release-production-ready@v1.1.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
