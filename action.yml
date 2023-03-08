@@ -1,6 +1,5 @@
-name: 'is-release-production-ready'
-
-description: 'An action that retrieves a release by tag and determines if it is a Published release, not a draft or prerelease.'
+name: is-release-production-ready
+description: An action that retrieves a release by tag and determines if it is a Published release, not a draft or prerelease.
 
 inputs:
   token:
