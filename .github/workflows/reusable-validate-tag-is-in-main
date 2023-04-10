@@ -1,10 +1,13 @@
 # Example Usage in a repo's workflow:
-
-# validate-tag-is-in-main-for-prod-deploys:
-#   needs: [set-vars, stakeholder-approval, attestor-approval]
-#   with: 
+# jobs:
+#  validate-tag-is-in-main-for-prod-deploys:
+#    needs: [set-vars, stakeholder-approval, attestor-approval]
+#    uses: im-open/is-release-produciton-ready/.github/workflows/reusable-validate-tag.yml@v1
+#    secrets: inherit
+#    with:
+#      environment: prod
+#      release-tag: v1.2.3
     
-          
 name: Reusable - Validate Tag is ready for Production Deploys
 on:
   workflow_call:
