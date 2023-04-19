@@ -5,7 +5,6 @@
 #    uses: im-open/is-release-produciton-ready/.github/workflows/reusable-validate-tag.yml@v1
 #    secrets: inherit
 #    with:
-#      environment: prod
 #      tag: v1.2.3
     
 name: Reusable - Validate Tag is ready for Production Deploys
