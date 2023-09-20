@@ -60,3 +60,135 @@ jobs:
       # The npm script to run to build the action.  This is typically 'npm run build' if the
       # action needs to be compiled.  For composite-run-steps actions this is typically empty.
       build-command: 'npm run build'
+
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      # NOTE:  These three releases have been created in this action's repository to test with.
+      #        If they are removed or updated, these tests will fail.
+      PRODUCTION_READY_TAG: 'v1.1.3'
+      PRE_RELEASE_TAG: 'v1.0.2'
+      DRAFT_RELEASE_TAG: 'v1.0.1'
+      NONEXISTENT_RELEASE_TAG: 'v304.973.444'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      #--------------------------------------
+      # RELEASE IS PRODUCTION READY RELEASE
+      #--------------------------------------
+      - name: '-------------------------------------------------------------------------------------------------------'
+        run: echo ""
+      - name: When validating a prod ready release (${{ env.PRODUCTION_READY_TAG}})
+        uses: ./
+        if: always()
+        id: production-release
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          release-tag: ${{ env.PRODUCTION_READY_TAG }}
+          fail-for-prerelease: false
+
+      - name: Then the outcome should be success
+        if: always()
+        run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.production-release.outcome }}"
+
+      - name: And the output should be true
+        if: always()
+        run: ./test/assert-values-match.sh --name "PRODUCTION_READY" --expected "true" --actual "${{ steps.production-release.outputs.PRODUCTION_READY }}"
+
+      #--------------------------------------
+      # RELEASE IS PRE-RELEASE
+      #--------------------------------------
+      - name: '-------------------------------------------------------------------------------------------------------'
+        run: echo ""
+
+      - name: When validating a pre-release (${{ env.PRE_RELEASE_TAG }})
+        uses: ./
+        if: always()
+        id: pre-release
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          release-tag: ${{ env.PRE_RELEASE_TAG }}
+          fail-for-prerelease: false
+
+      - name: Then the outcome should be success
+        if: always()
+        run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.pre-release.outcome }}"
+
+      - name: And the output should be false
+        if: always()
+        run: ./test/assert-values-match.sh --name "PRODUCTION_READY" --expected "false" --actual "${{ steps.pre-release.outputs.PRODUCTION_READY }}"
+
+      #--------------------------------------
+      # RELEASE IS DRAFT
+      #--------------------------------------
+      - name: '-------------------------------------------------------------------------------------------------------'
+        run: echo ""
+
+      - name: When validating a draft release (${{ env.DRAFT_RELEASE_TAG }})
+        uses: ./
+        if: always()
+        id: draft-release
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          release-tag: ${{ env.DRAFT_RELEASE_TAG }}
+          fail-for-prerelease: false
+
+      - name: Then the outcome should be success
+        if: always()
+        run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.draft-release.outcome }}"
+
+      - name: And the output should be false
+        if: always()
+        run: ./test/assert-values-match.sh --name "PRODUCTION_READY" --expected "false" --actual "${{ steps.draft-release.outputs.PRODUCTION_READY }}"
+
+      #--------------------------------------
+      # RELEASE THAT DOES NOT EXIST
+      #--------------------------------------
+      - name: '-------------------------------------------------------------------------------------------------------'
+        run: echo ""
+
+      - name: When validating a non-existent release (${{ env.NONEXISTENT_RELEASE_TAG }})
+        uses: ./
+        if: always()
+        id: nonexistent-release
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          release-tag: ${{ env.NONEXISTENT_RELEASE_TAG }}
+          fail-for-prerelease: false
+
+      - name: Then the outcome should be success
+        if: always()
+        run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.nonexistent-release.outcome }}"
+
+      - name: And the output should be false
+        if: always()
+        run: ./test/assert-values-match.sh --name "PRODUCTION_READY" --expected "false" --actual "${{ steps.nonexistent-release.outputs.PRODUCTION_READY }}"
+
+      #--------------------------------------
+      # FAILURE IF NOT A PRE-RELEASE
+      #--------------------------------------
+      - name: '-------------------------------------------------------------------------------------------------------'
+        run: echo ""
+
+      - name: When validating a non-existent release (${{  env.NONEXISTENT_RELEASE_TAG }}) and the fail-for-prerelease flag is set
+        uses: ./
+        if: always()
+        continue-on-error: true # This is needed because we expect the step to fail.  It needs to "pass" in order for the test job to succeed.
+        id: failure-flag
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          release-tag: ${{ env.NONEXISTENT_RELEASE_TAG }}
+          fail-for-prerelease: true
+
+      - name: Then the outcome should be failure
+        if: always()
+        run: ./test/assert-values-match.sh --name "step outcome" --expected "failure" --actual "${{ steps.failure-flag.outcome }}"
+
+      - name: And the output should be false
+        if: always()
+        run: ./test/assert-values-match.sh --name "PRODUCTION_READY" --expected "false" --actual "${{ steps.failure-flag.outputs.PRODUCTION_READY }}"
+
+      - name: '-------------------------------------------------------------------------------------------------------'
+        run: echo ""

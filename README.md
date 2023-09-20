@@ -51,7 +51,7 @@ jobs:
       # it will fail and the next job, deploy, will not happen.
       
       # You may also reference just the major or major.minor version
-      - uses: im-open/is-release-production-ready@v1.1.3
+      - uses: im-open/is-release-production-ready@v1.1.4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           release-tag: ${{ github.event.inputs.release-tag }}
