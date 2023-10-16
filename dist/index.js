@@ -16612,17 +16612,17 @@ async function run() {
       const draft = response.data.draft;
       const prerelease = response.data.prerelease;
       if (!draft && !prerelease) {
-        core.info('The release is production ready.');
+        core.info(`Release '${releaseTag}' is production ready.`);
         core.setOutput('PRODUCTION_READY', true);
       } else {
-        loggingFunction('The release is not production ready, it is marked as a pre-release');
+        if (draft) loggingFunction(`Release '${releaseTag}' is not production ready, it is marked as a draft.`);
+        if (prerelease) loggingFunction(`Release '${releaseTag}' is not production ready, it is marked as a pre-release.`);
         core.setOutput('PRODUCTION_READY', false);
       }
     })
     .catch(() => {
-      loggingFunction(
-        `The release '${releaseTag}' is not production ready.  It was either not found or it was a draft release.`
-      );
+      const errorMessage = `Release '${releaseTag}' is not production ready, it is either a draft release or it was not found.`;
+      loggingFunction(errorMessage);
       core.setOutput('PRODUCTION_READY', false);
     });
 }
