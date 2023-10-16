@@ -1,3 +1,7 @@
+# Tests
+
+Force tests to run from a fork to see what happens
+
 # is-release-production-ready
 
 An action that retrieves a release by tag and determines if it is a Published release.  The action considers releases to be Production ready when the API returns false for the release's `draft` and `prerelease` fields.
