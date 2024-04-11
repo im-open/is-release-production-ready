@@ -73,7 +73,7 @@ jobs:
       NONEXISTENT_RELEASE_TAG: 'v304.973.444'
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       #--------------------------------------
       # RELEASE IS PRODUCTION READY RELEASE
